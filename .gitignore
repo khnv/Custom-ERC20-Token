@@ -13,4 +13,15 @@ docs/
 # Dotenv file
 .env
 
+# macOS system files
 .DS_Store
+**/.DS_Store
+
+# Dependencies
+lib/
+
+# Deployment files
+deployments.json
+
+# Broadcast logs
+broadcast/
