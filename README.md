@@ -269,9 +269,6 @@ The project maintains 100% test coverage across all functions:
 - Only PAUSER_ROLE can pause/unpause
 - Prevents all transfers when paused
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Contributing
 
