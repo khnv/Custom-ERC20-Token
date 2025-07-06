@@ -7,13 +7,14 @@ import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 
 // Event declarations for testing
 event UserBlacklisted(address indexed user, address indexed by);
+
 event UserRemovedFromBlacklist(address indexed user, address indexed by);
+
 event TransferFeeUpdated(uint256 oldFee, uint256 newFee, address indexed by);
+
 event FeeCollectorUpdated(address indexed oldCollector, address indexed newCollector, address indexed by);
 
-
 contract TokenTest is Test {
-
     address owner = address(0x1);
     address user1 = address(0x2);
     address user2 = address(0x3);
@@ -23,7 +24,6 @@ contract TokenTest is Test {
     address pauser = address(0x7);
     address feeManager = address(0x8);
 
-    
     MyToken public token;
 
     function setUp() public {
@@ -36,12 +36,12 @@ contract TokenTest is Test {
     // Constructor Tests
     // ============================
 
-    function test_constructor() public {
+    function test_constructor() public view {
         assertEq(token.name(), "MyToken");
         assertEq(token.symbol(), "MTK");
         assertEq(token.decimals(), 18);
-        assertEq(token.totalSupply(), 1000 * 10**18);
-        assertEq(token.balanceOf(owner), 1000 * 10**18);
+        assertEq(token.totalSupply(), 1000 * 10 ** 18);
+        assertEq(token.balanceOf(owner), 1000 * 10 ** 18);
         assertEq(token.transferFeePercentage(), 250);
         assertEq(token.feeCollector(), feeCollector);
         assertEq(token.MAX_FEE_PERCENTAGE(), 1000);
@@ -64,29 +64,29 @@ contract TokenTest is Test {
 
     function test_mint() public {
         vm.startPrank(owner);
-        token.mint(100 * 10**18);
-        assertEq(token.balanceOf(owner), 1100 * 10**18);
+        token.mint(100 * 10 ** 18);
+        assertEq(token.balanceOf(owner), 1100 * 10 ** 18);
         vm.stopPrank();
     }
 
     function test_mint_unauthorized() public {
         vm.startPrank(user1);
         vm.expectRevert();
-        token.mint(100 * 10**18);
+        token.mint(100 * 10 ** 18);
         vm.stopPrank();
     }
 
     function test_mintTo() public {
         vm.startPrank(owner);
-        token.mintTo(user1, 100 * 10**18);
-        assertEq(token.balanceOf(user1), 100 * 10**18);
+        token.mintTo(user1, 100 * 10 ** 18);
+        assertEq(token.balanceOf(user1), 100 * 10 ** 18);
         vm.stopPrank();
     }
 
     function test_mintTo_unauthorized() public {
         vm.startPrank(user1);
         vm.expectRevert();
-        token.mintTo(user2, 100 * 10**18);
+        token.mintTo(user2, 100 * 10 ** 18);
         vm.stopPrank();
     }
 
@@ -96,37 +96,37 @@ contract TokenTest is Test {
 
     function test_burn() public {
         vm.startPrank(owner);
-        token.burn(100 * 10**18);
-        assertEq(token.balanceOf(owner), 900 * 10**18);
+        token.burn(100 * 10 ** 18);
+        assertEq(token.balanceOf(owner), 900 * 10 ** 18);
         vm.stopPrank();
     }
 
     function test_burn_unauthorized() public {
         vm.startPrank(user1);
         vm.expectRevert();
-        token.burn(100 * 10**18);
+        token.burn(100 * 10 ** 18);
         vm.stopPrank();
     }
 
     function test_burnFrom() public {
         vm.startPrank(owner);
-        token.mintTo(user1, 200 * 10**18);
+        token.mintTo(user1, 200 * 10 ** 18);
         vm.stopPrank();
-        
+
         vm.startPrank(owner);
-        token.burnFrom(user1, 100 * 10**18);
-        assertEq(token.balanceOf(user1), 100 * 10**18);
+        token.burnFrom(user1, 100 * 10 ** 18);
+        assertEq(token.balanceOf(user1), 100 * 10 ** 18);
         vm.stopPrank();
     }
 
     function test_burnFrom_unauthorized() public {
         vm.startPrank(owner);
-        token.mintTo(user1, 200 * 10**18);
+        token.mintTo(user1, 200 * 10 ** 18);
         vm.stopPrank();
-        
+
         vm.startPrank(user2);
         vm.expectRevert();
-        token.burnFrom(user1, 100 * 10**18);
+        token.burnFrom(user1, 100 * 10 ** 18);
         vm.stopPrank();
     }
 
@@ -185,13 +185,13 @@ contract TokenTest is Test {
             token.removeFromBlacklist(user2);
         }
         // Mint tokens to user1 BEFORE blacklisting them
-        token.mintTo(user1, 100 * 10**18);
+        token.mintTo(user1, 100 * 10 ** 18);
         token.addToBlacklist(user1);
         vm.stopPrank();
-        
+
         vm.startPrank(user1);
         vm.expectRevert("Sender is blacklisted");
-        token.transfer(user2, 50 * 10**18);
+        token.transfer(user2, 50 * 10 ** 18);
         vm.stopPrank();
     }
 
@@ -199,7 +199,7 @@ contract TokenTest is Test {
         vm.startPrank(owner);
         token.addToBlacklist(user2);
         vm.expectRevert("Recipient is blacklisted");
-        token.transfer(user2, 50 * 10**18);
+        token.transfer(user2, 50 * 10 ** 18);
         vm.stopPrank();
     }
 
@@ -240,7 +240,7 @@ contract TokenTest is Test {
         vm.startPrank(owner);
         token.pause();
         vm.expectRevert();
-        token.transfer(user1, 50 * 10**18);
+        token.transfer(user1, 50 * 10 ** 18);
         vm.stopPrank();
     }
 
@@ -250,61 +250,61 @@ contract TokenTest is Test {
 
     function test_transferFee() public {
         vm.startPrank(owner);
-        token.mintTo(user1, 1000 * 10**18);
+        token.mintTo(user1, 1000 * 10 ** 18);
         vm.stopPrank();
-        
+
         vm.startPrank(user1);
-        token.transfer(user2, 1000 * 10**18);
+        token.transfer(user2, 1000 * 10 ** 18);
         // 2.5% fee = 25 tokens, net = 975 tokens
-        assertEq(token.balanceOf(user2), 975 * 10**18);
-        assertEq(token.balanceOf(feeCollector), 25 * 10**18);
+        assertEq(token.balanceOf(user2), 975 * 10 ** 18);
+        assertEq(token.balanceOf(feeCollector), 25 * 10 ** 18);
         vm.stopPrank();
     }
 
     function test_transferFee_zeroFee() public {
         vm.startPrank(owner);
         token.setTransferFeePercentage(0);
-        token.mintTo(user1, 1000 * 10**18);
+        token.mintTo(user1, 1000 * 10 ** 18);
         vm.stopPrank();
-        
+
         vm.startPrank(user1);
-        token.transfer(user2, 1000 * 10**18);
-        assertEq(token.balanceOf(user2), 1000 * 10**18);
+        token.transfer(user2, 1000 * 10 ** 18);
+        assertEq(token.balanceOf(user2), 1000 * 10 ** 18);
         assertEq(token.balanceOf(feeCollector), 0);
         vm.stopPrank();
     }
 
     function test_transferFee_minting() public {
         vm.startPrank(owner);
-        token.mintTo(user1, 1000 * 10**18);
+        token.mintTo(user1, 1000 * 10 ** 18);
         // Minting should not incur fees
-        assertEq(token.balanceOf(user1), 1000 * 10**18);
+        assertEq(token.balanceOf(user1), 1000 * 10 ** 18);
         assertEq(token.balanceOf(feeCollector), 0);
         vm.stopPrank();
     }
 
     function test_transferFee_burning() public {
         vm.startPrank(owner);
-        token.burn(100 * 10**18);
+        token.burn(100 * 10 ** 18);
         // Burning should not incur fees
         assertEq(token.balanceOf(feeCollector), 0);
         vm.stopPrank();
     }
 
     function test_calculateTransferFee() public {
-        (uint256 fee, uint256 net) = token.calculateTransferFee(1000 * 10**18);
-        assertEq(fee, 25 * 10**18); // 2.5% of 1000
-        assertEq(net, 975 * 10**18); // 1000 - 25
+        (uint256 fee, uint256 net) = token.calculateTransferFee(1000 * 10 ** 18);
+        assertEq(fee, 25 * 10 ** 18); // 2.5% of 1000
+        assertEq(net, 975 * 10 ** 18); // 1000 - 25
     }
 
     function test_calculateTransferFee_zeroFee() public {
         vm.startPrank(owner);
         token.setTransferFeePercentage(0);
         vm.stopPrank();
-        
-        (uint256 fee, uint256 net) = token.calculateTransferFee(1000 * 10**18);
+
+        (uint256 fee, uint256 net) = token.calculateTransferFee(1000 * 10 ** 18);
         assertEq(fee, 0);
-        assertEq(net, 1000 * 10**18);
+        assertEq(net, 1000 * 10 ** 18);
     }
 
     function test_getTransferFeeInfo() public {
@@ -461,8 +461,6 @@ contract TokenTest is Test {
         vm.stopPrank();
     }
 
-
-
     // ============================
     // Integration Tests
     // ============================
@@ -480,18 +478,16 @@ contract TokenTest is Test {
 
         // Test minting
         vm.startPrank(user1);
-        token.mintTo(user2, 1000 * 10**18);
-        assertEq(token.balanceOf(user2), 1000 * 10**18);
+        token.mintTo(user2, 1000 * 10 ** 18);
+        assertEq(token.balanceOf(user2), 1000 * 10 ** 18);
         vm.stopPrank();
 
         // Test transfer with fee
         vm.startPrank(user2);
-        token.transfer(user1, 500 * 10**18);
-        assertEq(token.balanceOf(user1), 487.5 * 10**18); // 500 - 2.5% fee
-        assertEq(token.balanceOf(feeCollector), 12.5 * 10**18); // 2.5% fee
+        token.transfer(user1, 500 * 10 ** 18);
+        assertEq(token.balanceOf(user1), 487.5 * 10 ** 18); // 500 - 2.5% fee
+        assertEq(token.balanceOf(feeCollector), 12.5 * 10 ** 18); // 2.5% fee
         vm.stopPrank();
-
-
 
         // Test blacklisting
         vm.startPrank(blacklistManager);
@@ -501,8 +497,8 @@ contract TokenTest is Test {
 
         // Test burning
         vm.startPrank(user2);
-        token.burn(100 * 10**18);
-        assertEq(token.balanceOf(user2), 400 * 10**18);
+        token.burn(100 * 10 ** 18);
+        assertEq(token.balanceOf(user2), 400 * 10 ** 18);
         vm.stopPrank();
 
         // Test pausing
@@ -527,30 +523,30 @@ contract TokenTest is Test {
     function test_transfer_insufficientBalance() public {
         vm.startPrank(user1);
         vm.expectRevert();
-        token.transfer(user2, 100 * 10**18);
+        token.transfer(user2, 100 * 10 ** 18);
         vm.stopPrank();
     }
 
     function test_burn_insufficientBalance() public {
         vm.startPrank(owner);
         vm.expectRevert();
-        token.burn(2000 * 10**18);
+        token.burn(2000 * 10 ** 18);
         vm.stopPrank();
     }
 
     function test_burnFrom_insufficientBalance() public {
         vm.startPrank(owner);
-        token.mintTo(user1, 100 * 10**18);
+        token.mintTo(user1, 100 * 10 ** 18);
         vm.expectRevert();
-        token.burnFrom(user1, 200 * 10**18);
+        token.burnFrom(user1, 200 * 10 ** 18);
         vm.stopPrank();
     }
 
     function test_transfer_toSelf() public {
         vm.startPrank(owner);
-        token.transfer(owner, 100 * 10**18);
+        token.transfer(owner, 100 * 10 ** 18);
         // Should work but with fee deduction
-        assertEq(token.balanceOf(owner), 997.5 * 10**18); // 1000 - 100 + 100 - 2.5% fee
+        assertEq(token.balanceOf(owner), 997.5 * 10 ** 18); // 1000 - 100 + 100 - 2.5% fee
         vm.stopPrank();
     }
 
@@ -564,14 +560,14 @@ contract TokenTest is Test {
     function test_mint_zeroAmount() public {
         vm.startPrank(owner);
         token.mint(0);
-        assertEq(token.balanceOf(owner), 1000 * 10**18);
+        assertEq(token.balanceOf(owner), 1000 * 10 ** 18);
         vm.stopPrank();
     }
 
     function test_burn_zeroAmount() public {
         vm.startPrank(owner);
         token.burn(0);
-        assertEq(token.balanceOf(owner), 1000 * 10**18);
+        assertEq(token.balanceOf(owner), 1000 * 10 ** 18);
         vm.stopPrank();
     }
 
@@ -581,29 +577,27 @@ contract TokenTest is Test {
 
     function test_events() public {
         vm.startPrank(owner);
-        
+
         // Test UserBlacklisted event
         vm.expectEmit(true, true, false, true);
         emit UserBlacklisted(user1, owner);
         token.addToBlacklist(user1);
-        
+
         // Test UserRemovedFromBlacklist event
         vm.expectEmit(true, true, false, true);
         emit UserRemovedFromBlacklist(user1, owner);
         token.removeFromBlacklist(user1);
-        
+
         // Test TransferFeeUpdated event
         vm.expectEmit(false, false, false, true);
         emit TransferFeeUpdated(250, 500, owner);
         token.setTransferFeePercentage(500);
-        
+
         // Test FeeCollectorUpdated event
         vm.expectEmit(true, true, false, true);
         emit FeeCollectorUpdated(feeCollector, user1, owner);
         token.setFeeCollector(user1);
-        
 
-        
         vm.stopPrank();
     }
 
@@ -613,16 +607,14 @@ contract TokenTest is Test {
 
     function test_gas_efficient_transfers() public {
         vm.startPrank(owner);
-        token.mintTo(user1, 1000 * 10**18);
+        token.mintTo(user1, 1000 * 10 ** 18);
         vm.stopPrank();
-        
+
         vm.startPrank(user1);
         // Test multiple transfers to ensure gas efficiency
-        for (uint i = 0; i < 5; i++) {
-            token.transfer(user2, 10 * 10**18);
+        for (uint256 i = 0; i < 5; i++) {
+            token.transfer(user2, 10 * 10 ** 18);
         }
         vm.stopPrank();
     }
-
-
 }
