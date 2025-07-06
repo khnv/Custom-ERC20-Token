@@ -26,7 +26,7 @@ jobs:
 
       - name: Run Forge fmt
         run: |
-          forge fmt --check
+          run: forge fmt --check || (echo "Formatting issues found. Running forge fmt..." && forge fmt && echo "Files formatted. Please commit changes." && exit 1)
         id: fmt
 
       - name: Run Forge build
